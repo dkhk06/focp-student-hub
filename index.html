@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusPulse — Visual Student Analytics, Timetable & Planner</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Split Curtain Intro (D | K) -->
+    <div id="curtain-intro" class="curtain-overlay" aria-hidden="true">
+        <div class="curtain-half curtain-left">
+            <span class="curtain-letter">D</span>
+        </div>
+        <div class="curtain-half curtain-right">
+            <span class="curtain-letter">K</span>
+        </div>
+    </div>
+
+    <!-- Mandatory Submission Header (Keeps Name, Scholar No & FoCP CSE-1003 intact) -->
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">CP</div>
+            <div>
+                <h1>CampusPulse</h1>
+                <p class="subtitle">CSE Sec-02 · Budget, 75% Attendance, Timetable & Activity Planner</p>
+            </div>
+            <span class="badge">FoCP (CSE-1003)</span>
+        </div>
+
+        <div class="header-right">
+            <div class="student-meta">
+                <span><strong>Name:</strong> Dickson Ngamgougin Haokip</span>
+                <span><strong>Scholar No:</strong> [26U020181]</span>
+            </div>
+            <div class="custom-name-box">
+                <label for="custom-display-name">Display Name:</label>
+                <input type="text" id="custom-display-name" placeholder="Add your own name..."
+                    aria-label="Add your own name" />
+                <span id="custom-name-tag" class="custom-name-pill" hidden></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- KPI Strip -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <p class="kpi-label">Remaining Monthly Budget</p>
+                <h2 id="kpi-remaining">₹0</h2>
+                <small id="kpi-cap-sub">of ₹5,000 cap</small>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">75% Attendance Standing</p>
+                <h2 id="kpi-attendance">0%</h2>
+                <small id="kpi-bunk-sub">Safe to miss: 0 classes</small>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Best Active Streak</p>
+                <h2 id="kpi-streak">0 days</h2>
+                <small id="kpi-recovery-sub">Bounce-back days: 0</small>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Activity Readiness</p>
+                <h2 id="kpi-activity-status">0%</h2>
+                <small id="kpi-activity-sub">Based on saved surplus</small>
+            </div>
+        </section>
+
+        <!-- Visual Analytics Overview Strip (3 Charts) -->
+        <section class="charts-grid">
+            <div class="card chart-card">
+                <div class="chart-title">
+                    <h4>Expense Distribution</h4>
+                    <span class="hint">By Category (₹)</span>
+                </div>
+                <div class="canvas-box">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="chart-title">
+                    <h4>Subject Attendance vs. 75% Target</h4>
+                    <span class="hint">Green ≥ 75% · Red &lt; 75%</span>
+                </div>
+                <div class="canvas-box">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="chart-title">
+                    <h4>7-Day Habit Consistency</h4>
+                    <span class="hint">Daily Completion %</span>
+                </div>
+                <div class="canvas-box">
+                    <canvas id="habitChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Row 1: Budgeter + 75% Attendance Tracker -->
+        <section class="main-grid">
+            <!-- 1. Micro-Expense Budgeter -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="step-pill">01</span>
+                        <h3>Micro-Expense & Allowance Budgeter</h3>
+                    </div>
+                    <div class="inline-control">
+                        <label for="monthly-cap">Cap (₹)</label>
+                        <input type="number" id="monthly-cap" value="5000" min="100" step="100" />
+                    </div>
+                </div>
+
+                <form id="expense-form" class="form-row">
+                    <input type="text" id="exp-title" placeholder="Expense (e.g., Canteen tea, Auto)" required />
+                    <select id="exp-category">
+                        <option value="Food">Food</option>
+                        <option value="Transit">Transit</option>
+                        <option value="Essentials">Essentials</option>
+                        <option value="Hobbies">Hobbies</option>
+                    </select>
+                    <input type="number" id="exp-amount" placeholder="₹ Cost" min="1" required />
+                    <button type="submit">Add</button>
+                </form>
+
+                <div id="category-bars" class="category-bars"></div>
+                <h4 class="sub-heading">Recent Micro-Spends</h4>
+                <ul id="expense-list" class="item-list"></ul>
+            </div>
+
+            <!-- 2. 75% Attendance Buffer Tracker -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="step-pill">02</span>
+                        <h3>75% Attendance Tracker</h3>
+                    </div>
+                    <span class="hint" id="att-overall-hint">Target: 75%</span>
+                </div>
+
+                <form id="attendance-form" class="form-row">
+                    <input type="text" id="att-subject" placeholder="Subject (e.g., FOCP, FOEE)" required />
+                    <input type="number" id="att-attended" placeholder="Attended" min="0" required />
+                    <input type="number" id="att-total" placeholder="Total" min="1" required />
+                    <button type="submit">Add</button>
+                </form>
+
+                <div id="attendance-list" class="attendance-list"></div>
+            </div>
+        </section>
+
+        <!-- Row 2: Box-Style Class Timetable -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <span class="step-pill">03</span>
+                    <h3>Class Timetable (Box View · CSE Sec-02)</h3>
+                </div>
+                <div class="inline-control">
+                    <label for="day-filter">Day:</label>
+                    <select id="day-filter">
+                        <option value="All">All Days (Mon–Fri)</option>
+                        <option value="Mon">Mon</option>
+                        <option value="Tue">Tue</option>
+                        <option value="Wed">Wed</option>
+                        <option value="Thu">Thu</option>
+                        <option value="Fri">Fri</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Mobile Day Selector Pills -->
+            <div id="mobile-day-pills" class="mobile-day-pills" aria-label="Quick day selector">
+                <button type="button" class="day-pill active" data-day-pill="All">All</button>
+                <button type="button" class="day-pill" data-day-pill="Mon">Mon</button>
+                <button type="button" class="day-pill" data-day-pill="Tue">Tue</button>
+                <button type="button" class="day-pill" data-day-pill="Wed">Wed</button>
+                <button type="button" class="day-pill" data-day-pill="Thu">Thu</button>
+                <button type="button" class="day-pill" data-day-pill="Fri">Fri</button>
+            </div>
+
+            <form id="timetable-form" class="form-row">
+                <select id="tt-day">
+                    <option value="Mon">Mon</option>
+                    <option value="Tue">Tue</option>
+                    <option value="Wed">Wed</option>
+                    <option value="Thu">Thu</option>
+                    <option value="Fri">Fri</option>
+                </select>
+                <input type="text" id="tt-time" placeholder="Time (e.g., 9-10AM)" required />
+                <input type="text" id="tt-course" placeholder="Subject / Class (e.g., FOCP)" required />
+                <button type="submit">Add Class Box</button>
+            </form>
+
+            <div id="timetable-board" class="timetable-board"></div>
+        </section>
+
+        <!-- Row 3: Habit Streak Grid + Activity Planner -->
+        <section class="main-grid">
+            <!-- 4. Habit Streak & Recovery -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="step-pill">04</span>
+                        <h3>7-Day Habit & Recovery Grid</h3>
+                    </div>
+                    <span class="hint">Click cell to toggle</span>
+                </div>
+
+                <form id="habit-form" class="form-row">
+                    <input type="text" id="habit-name" placeholder="New habit (e.g., Evening Walk)" required />
+                    <button type="submit">Add Habit</button>
+                </form>
+
+                <div class="habit-legend">
+                    <span><i class="dot done"></i> Done</span>
+                    <span><i class="dot recovery"></i> Recovery</span>
+                    <span><i class="dot miss"></i> Missed</span>
+                </div>
+
+                <div id="habit-table-wrap" class="table-wrap"></div>
+            </div>
+
+            <!-- 5. Activity Planner -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="step-pill">05</span>
+                        <h3>Activity Planner</h3>
+                    </div>
+                    <div class="inline-control">
+                        <label for="activity-people">People:</label>
+                        <input type="number" id="activity-people" value="4" min="1" max="50" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <input type="text" id="activity-name" placeholder="Activity Plan Title" />
+                </div>
+
+                <form id="stop-form" class="form-row">
+                    <input type="text" id="stop-slot" placeholder="Date / Slot (e.g., 19th Dec 2026)" required />
+                    <input type="text" id="stop-item" placeholder="Activity / Stop" required />
+                    <input type="number" id="stop-cost" placeholder="₹ Cost" min="0" required />
+                    <button type="submit">Add</button>
+                </form>
+
+                <div class="summary-bar" id="activity-summary-bar"></div>
+                <ul id="stop-list" class="item-list"></ul>
+            </div>
+        </section>
+
+        <footer class="footer-actions">
+            <span class="hint">Data persists automatically in browser storage (<code>localStorage</code>)</span>
+            <div class="footer-btns">
+                <button id="replay-curtain" class="btn-secondary">Replay D | K Curtain</button>
+                <button id="reset-demo" class="btn-secondary">Reset Sample Data</button>
+            </div>
+        </footer>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
