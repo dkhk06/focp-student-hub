@@ -1,8 +1,8 @@
-const STORAGE_KEY = "campuspulse_focp_v5";
+const STORAGE_KEY = "campuspulse_focp_v6";
 
-// Default timetable derived from TT_1st_CSE Sec02 Oct2026 V03.pdf (subjects/labs only; no teacher or room)
 const defaultState = {
     customDisplayName: "",
+    activeTab: "overview",
     monthlyCap: 5000,
     expenses: [
         { id: 1, title: "Canteen Tea & Poha", category: "Food", amount: 45 },
@@ -89,6 +89,35 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function applyActiveTab() {
+    const tab = state.activeTab || "overview";
+
+    document.querySelectorAll("#section-tabs .tab-btn").forEach((btn) => {
+        const isActive = btn.dataset.tab === tab;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-selected", String(isActive));
+    });
+
+    const chartsSection = document.getElementById("panel-charts");
+    if (chartsSection) {
+        chartsSection.classList.toggle("is-hidden", tab !== "overview");
+    }
+
+    document.querySelectorAll(".main-grid").forEach((grid) => {
+        const visibleCardsInGrid = Array.from(grid.querySelectorAll(".tab-panel")).filter((panel) => {
+            const allowed = (panel.dataset.panels || "").split(",");
+            return allowed.includes(tab);
+        });
+        grid.classList.toggle("is-hidden", visibleCardsInGrid.length === 0);
+        grid.classList.toggle("single-focus", tab !== "overview" && visibleCardsInGrid.length === 1);
+    });
+
+    document.querySelectorAll(".tab-panel").forEach((panel) => {
+        const allowed = (panel.dataset.panels || "").split(",");
+        panel.classList.toggle("is-hidden", !allowed.includes(tab));
+    });
+}
+
 function playSplitCurtain() {
     const curtain = document.getElementById("curtain-intro");
     if (!curtain) return;
@@ -142,7 +171,7 @@ function getHabitStats(days) {
 }
 
 function renderCharts(catTotals, subjectMetrics, dailyHabitRates) {
-    if (typeof Chart === "undefined") return;
+    if (typeof Chart === "undefined" || state.activeTab !== "overview") return;
 
     const commonTextColor = "#94a3b8";
     const gridColor = "rgba(148, 163, 184, 0.12)";
@@ -253,6 +282,8 @@ function renderCharts(catTotals, subjectMetrics, dailyHabitRates) {
 }
 
 function render() {
+    applyActiveTab();
+
     // Custom Display Name (independent of submission Name & Scholar No)
     const nameInput = document.getElementById("custom-display-name");
     const namePill = document.getElementById("custom-name-tag");
@@ -508,6 +539,13 @@ function render() {
 }
 
 // Event Listeners
+document.getElementById("section-tabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".tab-btn");
+    if (!btn || !btn.dataset.tab) return;
+    state.activeTab = btn.dataset.tab;
+    render();
+});
+
 document.getElementById("custom-display-name").addEventListener("input", (e) => {
     state.customDisplayName = e.target.value;
     render();
