@@ -1,20 +1,52 @@
 :root {
-    --bg: #080c14;
-    --surface: #111827;
-    --surface-2: #192336;
-    --surface-hover: #212e47;
-    --text: #f1f5f9;
+    --bg: #070b14;
+    --bg-glow-1: rgba(56, 189, 248, 0.11);
+    --bg-glow-2: rgba(129, 140, 248, 0.09);
+    --surface: rgba(15, 23, 42, 0.88);
+    --surface-2: rgba(24, 35, 58, 0.92);
+    --surface-hover: rgba(34, 49, 79, 0.96);
+    --text: #f8fafc;
     --muted: #94a3b8;
     --accent: #38bdf8;
-    --accent-soft: rgba(56, 189, 248, 0.14);
+    --accent-strong: #0284c7;
+    --accent-text: #03101d;
+    --accent-soft: rgba(56, 189, 248, 0.15);
     --green: #22c55e;
-    --green-soft: rgba(34, 197, 94, 0.14);
+    --green-soft: rgba(34, 197, 94, 0.15);
     --amber: #f59e0b;
-    --amber-soft: rgba(245, 158, 11, 0.14);
+    --amber-soft: rgba(245, 158, 11, 0.15);
     --red: #f87171;
-    --red-soft: rgba(248, 113, 113, 0.14);
-    --border: #253147;
-    --radius: 14px;
+    --red-soft: rgba(248, 113, 113, 0.15);
+    --border: rgba(148, 163, 184, 0.18);
+    --topbar-bg: rgba(9, 14, 26, 0.86);
+    --curtain-bg: linear-gradient(135deg, #0c1528 0%, #060a12 100%);
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    --radius: 16px;
+}
+
+:root[data-theme="light"] {
+    --bg: #f4f7fb;
+    --bg-glow-1: rgba(2, 132, 199, 0.08);
+    --bg-glow-2: rgba(99, 102, 241, 0.07);
+    --surface: rgba(255, 255, 255, 0.94);
+    --surface-2: #f1f5f9;
+    --surface-hover: #e2e8f0;
+    --text: #0f172a;
+    --muted: #475569;
+    --accent: #0284c7;
+    --accent-strong: #0369a1;
+    --accent-text: #ffffff;
+    --accent-soft: rgba(2, 132, 199, 0.12);
+    --green: #16a34a;
+    --green-soft: rgba(22, 163, 74, 0.12);
+    --amber: #d97706;
+    --amber-soft: rgba(217, 119, 6, 0.12);
+    --red: #dc2626;
+    --red-soft: rgba(220, 38, 38, 0.12);
+    --border: rgba(15, 23, 42, 0.12);
+    --topbar-bg: rgba(255, 255, 255, 0.88);
+    --curtain-bg: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 100%);
+    --shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
 }
 
 * {
@@ -26,15 +58,16 @@
 
 body {
     background:
-        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.09), transparent 35%),
-        radial-gradient(circle at 90% 5%, rgba(167, 139, 250, 0.07), transparent 35%),
+        radial-gradient(circle at 12% 0%, var(--bg-glow-1), transparent 38%),
+        radial-gradient(circle at 88% 4%, var(--bg-glow-2), transparent 38%),
         var(--bg);
     color: var(--text);
     line-height: 1.5;
     min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Split Curtain Intro (D | K) */
+/* Split Curtain Intro ("Student hub") */
 .curtain-overlay {
     position: fixed;
     inset: 0;
@@ -50,45 +83,47 @@ body {
 }
 
 .curtain-half {
+    position: relative;
     width: 50%;
     height: 100%;
-    background: linear-gradient(180deg, #0b1324 0%, #060911 100%);
-    display: flex;
-    align-items: center;
-    transition: transform 0.9s cubic-bezier(0.77, 0, 0.175, 1);
+    background: var(--curtain-bg);
+    overflow: hidden;
+    transition: transform 1.65s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
 }
 
 .curtain-left {
-    justify-content: flex-end;
     border-right: 1px solid rgba(56, 189, 248, 0.35);
-    box-shadow: inset -18px 0 36px rgba(0, 0, 0, 0.55);
 }
 
 .curtain-right {
-    justify-content: flex-start;
     border-left: 1px solid rgba(56, 189, 248, 0.35);
-    box-shadow: inset 18px 0 36px rgba(0, 0, 0, 0.55);
 }
 
-.curtain-letter {
-    font-size: clamp(4.5rem, 12vw, 9.5rem);
+.curtain-word {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(2.4rem, 7vw, 5.5rem);
     font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #f8fafc 15%, var(--accent) 85%);
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    background: linear-gradient(135deg, var(--text) 15%, var(--accent) 88%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     user-select: none;
 }
 
-.curtain-left .curtain-letter {
-    padding-right: 0.14em;
+/* Aligns "Student hub" as one continuous word across the 50% split */
+.curtain-word-left {
+    left: 100%;
+    transform: translate(-50%, -50%);
 }
 
-.curtain-right .curtain-letter {
-    padding-left: 0.14em;
+.curtain-word-right {
+    left: 0;
+    transform: translate(-50%, -50%);
 }
 
 .curtain-overlay.open .curtain-left {
@@ -101,8 +136,8 @@ body {
 
 /* Header & Layout */
 .topbar {
-    background: rgba(10, 15, 26, 0.94);
-    backdrop-filter: blur(10px);
+    background: var(--topbar-bg);
+    backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     padding: 0.9rem 1.5rem;
     display: flex;
@@ -123,21 +158,23 @@ body {
 }
 
 .brand-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), #0284c7);
-    color: #04101d;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: var(--accent-text);
     font-weight: 800;
     display: grid;
     place-items: center;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
 }
 
 .brand h1 {
-    font-size: 1.2rem;
-    letter-spacing: -0.02em;
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
 }
 
 .subtitle {
@@ -149,10 +186,10 @@ body {
     background: var(--accent-soft);
     color: var(--accent);
     border: 1px solid rgba(56, 189, 248, 0.35);
-    padding: 0.22rem 0.65rem;
+    padding: 0.24rem 0.7rem;
     border-radius: 999px;
-    font-size: 0.76rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     white-space: nowrap;
 }
 
@@ -160,18 +197,42 @@ body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
 }
 
 .student-meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.84rem;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.8rem;
     background: var(--surface);
-    padding: 0.5rem 0.85rem;
-    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    border-radius: 12px;
     border: 1px solid var(--border);
+    min-width: 340px;
+}
+
+.meta-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.member-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.1rem;
+    white-space: nowrap;
+}
+
+.scholar-tag {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
 }
 
 .custom-name-box {
@@ -180,7 +241,7 @@ body {
     gap: 0.45rem;
     background: var(--surface);
     padding: 0.35rem 0.65rem;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid var(--border);
     font-size: 0.8rem;
     color: var(--muted);
@@ -189,8 +250,8 @@ body {
 .custom-name-box input {
     padding: 0.35rem 0.55rem;
     font-size: 0.82rem;
-    width: 150px;
-    min-width: 110px;
+    width: 145px;
+    min-width: 105px;
 }
 
 .custom-name-pill {
@@ -204,10 +265,16 @@ body {
     white-space: nowrap;
 }
 
+.theme-btn {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.52rem 0.85rem;
+}
+
 .container {
     max-width: 1280px;
-    margin: 1.35rem auto;
-    padding: 0 1.15rem 3rem;
+    margin: 1.4rem auto;
+    padding: 0 1.15rem 3.2rem;
     display: flex;
     flex-direction: column;
     gap: 1.35rem;
@@ -224,21 +291,28 @@ body {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.2rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.25s ease;
+}
+
+.kpi-card:hover {
+    border-color: rgba(56, 189, 248, 0.38);
 }
 
 .kpi-label {
     color: var(--muted);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
 }
 
 .kpi-card h2 {
-    font-size: 1.7rem;
+    font-size: 1.75rem;
+    font-weight: 800;
     margin: 0.25rem 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
 }
 
 .kpi-card small,
@@ -250,12 +324,13 @@ body {
 /* Section Tabs Bar */
 .tabs-bar {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.45rem;
     overflow-x: auto;
-    padding: 0.35rem;
+    padding: 0.4rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
     -webkit-overflow-scrolling: touch;
 }
 
@@ -264,8 +339,8 @@ body {
     color: var(--muted);
     font-weight: 600;
     font-size: 0.85rem;
-    padding: 0.52rem 0.9rem;
-    border-radius: 9px;
+    padding: 0.55rem 0.95rem;
+    border-radius: 10px;
     white-space: nowrap;
     transform: none;
 }
@@ -277,9 +352,10 @@ body {
 }
 
 .tab-btn.active {
-    background: var(--accent);
-    color: #04101d;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: var(--accent-text);
     font-weight: 700;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.24);
 }
 
 /* Single-Tab Focus Layout */
@@ -307,7 +383,7 @@ body {
 .chart-card {
     display: flex;
     flex-direction: column;
-    gap: 0.7rem;
+    gap: 0.75rem;
 }
 
 .chart-title {
@@ -318,8 +394,8 @@ body {
 }
 
 .chart-title h4 {
-    font-size: 0.92rem;
-    font-weight: 600;
+    font-size: 0.94rem;
+    font-weight: 700;
 }
 
 .canvas-box {
@@ -362,12 +438,13 @@ body {
     font-weight: 700;
     color: var(--accent);
     background: var(--accent-soft);
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
+    padding: 0.2rem 0.52rem;
+    border-radius: 7px;
 }
 
 .card-header h3 {
-    font-size: 1.05rem;
+    font-size: 1.06rem;
+    font-weight: 700;
 }
 
 .inline-control {
@@ -388,8 +465,8 @@ body {
 input,
 select,
 button {
-    padding: 0.52rem 0.72rem;
-    border-radius: 9px;
+    padding: 0.52rem 0.75rem;
+    border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--surface-2);
     color: var(--text);
@@ -400,6 +477,7 @@ input:focus,
 select:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 input[type="text"] {
@@ -412,16 +490,16 @@ input[type="number"] {
 }
 
 button {
-    background: var(--accent);
-    color: #04101d;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: var(--accent-text);
     font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: transform 0.12s ease, opacity 0.15s ease;
+    transition: transform 0.14s ease, opacity 0.15s ease, background-color 0.2s ease;
 }
 
 button:hover {
-    opacity: 0.92;
+    opacity: 0.94;
     transform: translateY(-1px);
 }
 
@@ -431,10 +509,14 @@ button:hover {
     border: 1px solid var(--border);
 }
 
+.btn-secondary:hover {
+    background: var(--surface-hover);
+}
+
 .btn-mini {
     padding: 0.28rem 0.58rem;
     font-size: 0.76rem;
-    border-radius: 6px;
+    border-radius: 7px;
     background: var(--surface-hover);
     color: var(--text);
     border: 1px solid var(--border);
@@ -484,7 +566,7 @@ button:hover {
 
 .day-pill.active {
     background: var(--accent);
-    color: #04101d;
+    color: var(--accent-text);
     border-color: var(--accent);
 }
 
@@ -538,7 +620,7 @@ button:hover {
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-left: 3px solid var(--accent);
-    border-radius: 9px;
+    border-radius: 10px;
     padding: 0.6rem 0.68rem;
     display: flex;
     flex-direction: column;
@@ -594,7 +676,7 @@ button:hover {
     display: flex;
     justify-content: space-between;
     font-size: 0.84rem;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.22rem;
 }
 
 .bar-track {
@@ -606,14 +688,15 @@ button:hover {
 
 .bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #60a5fa);
+    background: linear-gradient(90deg, var(--accent), #818cf8);
     border-radius: 999px;
 }
 
 .sub-heading {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     color: var(--muted);
     margin-bottom: 0.5rem;
 }
@@ -630,9 +713,9 @@ button:hover {
 
 .item-list li {
     background: var(--surface-2);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
     padding: 0.58rem 0.75rem;
-    border-radius: 9px;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -653,7 +736,7 @@ button:hover {
 .att-card {
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 0.7rem 0.85rem;
     display: flex;
     flex-direction: column;
@@ -668,7 +751,7 @@ button:hover {
 }
 
 .att-title {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
 }
 
@@ -686,7 +769,7 @@ button:hover {
 .status-pill {
     font-size: 0.74rem;
     font-weight: 600;
-    padding: 0.18rem 0.52rem;
+    padding: 0.18rem 0.55rem;
     border-radius: 999px;
     white-space: nowrap;
 }
@@ -780,7 +863,7 @@ table.data-table th:first-child {
     background: var(--surface-2);
     border: 1px solid var(--border);
     padding: 0.68rem 0.88rem;
-    border-radius: 9px;
+    border-radius: 10px;
     margin-bottom: 0.75rem;
     display: flex;
     flex-wrap: wrap;
@@ -850,6 +933,16 @@ table.data-table th:first-child {
     }
 
     .kpi-card h2 {
-        font-size: 1.48rem;
+        font-size: 1.5rem;
+    }
+
+    .student-meta {
+        min-width: 0;
+    }
+
+    .member-row {
+        white-space: normal;
+        flex-wrap: wrap;
+        gap: 0.25rem 0.75rem;
     }
 }

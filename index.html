@@ -1,28 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CampusPulse — Visual Student Analytics, Timetable & Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
-    <!-- Split Curtain Intro (D / U on left, K / K on right) -->
+    <!-- Split Curtain Intro (Student hub) -->
     <div id="curtain-intro" class="curtain-overlay" aria-hidden="true">
         <div class="curtain-half curtain-left">
-            <div class="curtain-stack curtain-stack-left">
-                <span class="curtain-letter">D</span>
-                <span class="curtain-sub">U</span>
-            </div>
+            <span class="curtain-word curtain-word-left">Student hub</span>
         </div>
         <div class="curtain-half curtain-right">
-            <div class="curtain-stack curtain-stack-right">
-                <span class="curtain-letter">K</span>
-                <span class="curtain-sub">K</span>
-            </div>
+            <span class="curtain-word curtain-word-right">Student hub</span>
         </div>
     </div>
 
@@ -39,17 +37,32 @@
 
         <div class="header-right">
             <div class="student-meta">
-                <span><strong>Name:</strong> Dickson Ngamgougin Haokip</span>
-                <span><strong>Scholar No:</strong> [26U020181]</span>
-                <span><strong>Name:</strong> Utkarsh Chauhan</span>
-                <span><strong>Scholar No:</strong> [26U020185]</span>
+                <div class="meta-header">Group Members</div>
+                <div class="member-row">
+                    <span><strong>Name:</strong> Dickson Ngamgougin Haokip</span>
+                    <span class="scholar-tag"><strong>Scholar No:</strong> [26U020181]</span>
+                </div>
+                <div class="member-row">
+                    <span><strong>Name:</strong> Utkarsh Chauhan</span>
+                    <span class="scholar-tag"><strong>Scholar No:</strong> [26U020185]</span>
+                </div>
+                <div class="member-row">
+                    <span><strong>Name:</strong> Aman Verma</span>
+                    <span class="scholar-tag"><strong>Scholar No:</strong> [26U020182]</span>
+                </div>
             </div>
+
             <div class="custom-name-box">
                 <label for="custom-display-name">Display Name:</label>
                 <input type="text" id="custom-display-name" placeholder="Add your own name..."
                     aria-label="Add your own name" />
                 <span id="custom-name-tag" class="custom-name-pill" hidden></span>
             </div>
+
+            <button type="button" id="theme-toggle" class="btn-secondary theme-btn"
+                aria-label="Toggle dark or light mode">
+                Light Mode
+            </button>
         </div>
     </header>
 
@@ -290,7 +303,7 @@
         <footer class="footer-actions">
             <span class="hint">Data persists automatically in browser storage (<code>localStorage</code>)</span>
             <div class="footer-btns">
-                <button id="replay-curtain" class="btn-secondary">Replay D | K Curtain</button>
+                <button id="replay-curtain" class="btn-secondary">Replay Intro</button>
                 <button id="reset-demo" class="btn-secondary">Reset Sample Data</button>
             </div>
         </footer>
