@@ -1,6 +1,7 @@
-const STORAGE_KEY = "campuspulse_focp_v6";
+const STORAGE_KEY = "campuspulse_focp_v8";
 
 const defaultState = {
+    theme: "dark",
     customDisplayName: "",
     activeTab: "overview",
     monthlyCap: 5000,
@@ -89,6 +90,16 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function applyTheme() {
+    const theme = state.theme === "light" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    document.body.setAttribute("data-theme", theme);
+    const btn = document.getElementById("theme-toggle");
+    if (btn) {
+        btn.textContent = theme === "light" ? "Dark Mode" : "Light Mode";
+    }
+}
+
 function applyActiveTab() {
     const tab = state.activeTab || "overview";
 
@@ -130,7 +141,7 @@ function playSplitCurtain() {
             curtain.classList.add("open");
             curtainTimeoutId = setTimeout(() => {
                 curtain.classList.add("done");
-            }, 950);
+            }, 1700);
         });
     });
 }
@@ -173,8 +184,10 @@ function getHabitStats(days) {
 function renderCharts(catTotals, subjectMetrics, dailyHabitRates) {
     if (typeof Chart === "undefined" || state.activeTab !== "overview") return;
 
-    const commonTextColor = "#94a3b8";
-    const gridColor = "rgba(148, 163, 184, 0.12)";
+    const isLight = state.theme === "light";
+    const commonTextColor = isLight ? "#475569" : "#94a3b8";
+    const gridColor = isLight ? "rgba(30, 41, 59, 0.1)" : "rgba(148, 163, 184, 0.12)";
+    const borderColor = isLight ? "#edf1f7" : "#111827";
 
     const expCtx = document.getElementById("expenseChart");
     if (expenseChartInstance) expenseChartInstance.destroy();
@@ -185,8 +198,8 @@ function renderCharts(catTotals, subjectMetrics, dailyHabitRates) {
             datasets: [
                 {
                     data: catTotals,
-                    backgroundColor: ["#38bdf8", "#a78bfa", "#22c55e", "#f59e0b"],
-                    borderColor: "#111827",
+                    backgroundColor: ["#38bdf8", "#818cf8", "#22c55e", "#f59e0b"],
+                    borderColor,
                     borderWidth: 2
                 }
             ]
@@ -282,6 +295,7 @@ function renderCharts(catTotals, subjectMetrics, dailyHabitRates) {
 }
 
 function render() {
+    applyTheme();
     applyActiveTab();
 
     // Custom Display Name (independent of submission Name & Scholar No)
@@ -539,6 +553,11 @@ function render() {
 }
 
 // Event Listeners
+document.getElementById("theme-toggle").addEventListener("click", () => {
+    state.theme = state.theme === "light" ? "dark" : "light";
+    render();
+});
+
 document.getElementById("section-tabs").addEventListener("click", (e) => {
     const btn = e.target.closest(".tab-btn");
     if (!btn || !btn.dataset.tab) return;
